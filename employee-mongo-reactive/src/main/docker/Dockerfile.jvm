@@ -11,10 +11,10 @@
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/employee-mongo-reactive-jvm
+# docker run --link mongodb -i --rm -p 9080:9080 quarkus/employee-mongo-reactive-jvm
 #
 ###
-FROM fabric8/java-alpine-openjdk8-jre
+FROM fabric8/java-alpine-openjdk11-jre
 ENV JAVA_OPTIONS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV AB_ENABLED=jmx_exporter
 COPY target/lib/* /deployments/lib/

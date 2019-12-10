@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Employee MongoDB REST service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/wingcss/0.1.8/wing.min.css"/>
+    <!-- Load AngularJS -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script type="text/javascript">
+      var app = angular.module("Employee", []);
+      app.controller("EmployeeController", function ($scope, $http) {
+        $scope.employees = [];
+        $scope.form = {
+          employeeId: "",
+          firstName: ""
+        };
+        //Now load the data from server
+        _refreshPageData();
+        $scope.add = function () {
+          var data = { "employeeId": $scope.form.employeeId, "firstName": $scope.form.firstName };
+          $http({
+            method: "POST",
+            url: '/api/v1/employee',
+            data: angular.toJson(data),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }).then(_success, _error);
+        };
+        $scope.deleteEmployee = function(employeeId) {
+         $http({
+            method: "DELETE",
+            url: '/api/v1/employee/'+employeeId,
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }).then(_success, _error);
+        };
+        /* Private Methods */
+        function _refreshPageData() {
+          $http({
+            method: 'GET',
+            url: '/api/v1/employee'
+          }).then(function successCallback(response) {
+            $scope.employees = response.data;
+          }, function errorCallback(response) {
+            console.log(response.statusText);
+          });
+        }
+        function _success(response) {
+          _refreshPageData();
+          _clearForm();
+        }
+        function _error(response) {
+          alert(response.data.message || response.statusText);
+        }
+        //Clear the form
+        function _clearForm() {
+          $scope.form.employeeId = "";
+          $scope.form.firstName = "";
+        }
+      });
+    </script>
+</head>
+<body ng-app="Employee" ng-controller="EmployeeController">
+
+<div class="container">
+    <h1>REST Service - Employee</h1>
+
+    <h3>Add a new Employee</h3>
+    <form ng-submit="add()">
+        <div class="row">
+            <div class="col-2"><input type="text" placeholder="ID" ng-model="form.employeeId" size="60"/></div>
+        </div>
+        <div class="row">
+            <div class="col-2"><input type="text" placeholder="First Name" ng-model="form.firstName" size="60"/></div>
+        </div>
+        <input type="submit" value="Save"/>
+
+    </form>
+
+    <h3>Employee List</h3>
+    <div class="row">
+        <div class="col-4">ID</div>
+        <div class="col-4">First Name</div>
+        <div class="col-4">Delete</div>
+    </div>
+    <div class="row" ng-repeat="employee in employees">
+        <div class="col-4">{{ employee.employeeId }}</div>
+        <div class="col-4">{{ employee.firstName }}</div>
+        <div class="col-4"><input type="button" name="deleteEmployee" id="deleteEmployee" value="delete" ng-click="deleteEmployee(employee.employeeId)"/></div>
+    </div>
+</div>
+
+</body>
+</html>

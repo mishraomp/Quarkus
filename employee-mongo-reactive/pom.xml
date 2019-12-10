@@ -6,10 +6,10 @@
   <artifactId>employee-mongo-reactive</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <java.version>11</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus-plugin.version>1.0.1.Final</quarkus-plugin.version>
@@ -17,6 +17,7 @@
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>1.0.1.Final</quarkus.platform.version>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
+    <lombok.version>1.18.10</lombok.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -33,6 +34,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-narayana-jta</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -56,6 +61,12 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>compile</scope>
+      <version>${lombok.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -74,6 +85,18 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -82,7 +105,23 @@
           <systemProperties>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
           </systemProperties>
+          <argLine>
+            --illegal-access=permit
+          </argLine>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>1.0.7</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -109,6 +148,9 @@
                   <systemProperties>
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                   </systemProperties>
+                  <argLine>
+                    --illegal-access=permit
+                  </argLine>
                 </configuration>
               </execution>
             </executions>

@@ -1,0 +1,17 @@
+{
+  "employeeId": 1,
+  "firstName": "om",
+  "lastName": "mishra",
+  "age": 33,
+  "salary": 0,
+  "addressList": [
+    {
+      "addressType": "home",
+      "addressLine": "somewhere",
+      "city": "someCity",
+      "state": "someState",
+      "country": "someCountry",
+      "zip": "wtf"
+    }
+  ]
+}
